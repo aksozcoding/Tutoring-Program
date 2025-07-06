@@ -9,19 +9,17 @@
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
       font-family: 'Roboto', sans-serif;
       background: linear-gradient(135deg, #1976d2, #64b5f6);
-      margin: 0;
-      padding: 0;
       min-height: 100vh;
-      overflow: hidden;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      position: relative;
     }
 
     .background-animation {
@@ -43,52 +41,27 @@
     }
 
     @keyframes floatShape {
-      0% {
-        transform: translateY(0) translateX(0) scale(1);
-        opacity: 0.3;
-      }
-      50% {
-        transform: translateY(-100px) translateX(100px) scale(1.2);
-        opacity: 0.6;
-      }
-      100% {
-        transform: translateY(0) translateX(0) scale(1);
-        opacity: 0.3;
-      }
+      0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+      50% { transform: translateY(-100px) translateX(100px) scale(1.2); opacity: 0.6; }
+      100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
     }
 
     .container {
       position: relative;
       z-index: 1;
-      width: 90%;
-      max-width: 650px;
+      width: 95%;
+      max-width: 800px;
       background-color: #ffffff;
-      padding: 30px;
-      border-radius: 12px;
+      padding: 40px;
+      border-radius: 16px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
       animation: fadeIn 1s ease-in-out;
+      margin: 50px auto;
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h1, h2 {
@@ -112,7 +85,6 @@
       margin-bottom: 20px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      transition: border-color 0.3s, box-shadow 0.3s;
       font-size: 15px;
     }
 
@@ -158,18 +130,11 @@
 
     .teacher-card:hover {
       background-color: #bbdefb;
-      transition: background 0.3s;
     }
 
     @keyframes fadeCard {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     .teacher-card button {
@@ -179,7 +144,6 @@
       border: none;
       color: white;
       border-radius: 4px;
-      transition: background-color 0.3s, transform 0.2s;
     }
 
     .teacher-card button:hover {
@@ -204,7 +168,12 @@
       animation: slideDown 0.5s ease-out;
     }
 
-    #topNotification span.close-btn {
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    #topNotification .close-btn {
       position: absolute;
       top: 8px;
       right: 12px;
@@ -212,19 +181,37 @@
       font-weight: bold;
       font-size: 20px;
     }
+
+    footer {
+      width: 100%;
+      background-color: #0d47a1;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 14px;
+      font-family: 'Roboto', sans-serif;
+      margin-top: auto;
+    }
+
+    footer p {
+      margin: 5px 0;
+    }
+
+    footer p:first-child {
+      font-size: 18px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <!-- Arka plan animasyon alanı -->
+
   <div class="background-animation" id="animatedBackground"></div>
 
-  <!-- Bildirim kutusu -->
   <div id="topNotification">
     <span id="notificationText"></span>
     <span class="close-btn" onclick="closeNotification()">&times;</span>
   </div>
 
-  <!-- Ana içerik -->
   <div class="container">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Logo-logosu.png"
          alt="Okul Logosu"
@@ -248,6 +235,13 @@
       <div id="teacherList" class="teacher-list"></div>
     </div>
   </div>
+
+  <footer>
+    <p>Aksöz Eğitim Kurumu</p>
+    <p>📍 Yeni Mahalle, Eğitim Caddesi No:7, Midyat / Mardin</p>
+    <p>📞 0538 055 84 40 | ✉️ bilgi@aksozegitim.com</p>
+    <p>© 2025 Tüm Hakları Saklıdır.</p>
+  </footer>
 
   <script>
     const subjects = [
@@ -342,7 +336,6 @@
       document.getElementById("topNotification").style.display = "none";
     }
 
-    // Arka plan animasyonlarını oluştur
     const background = document.getElementById("animatedBackground");
     for (let i = 0; i < 20; i++) {
       const shape = document.createElement("div");
