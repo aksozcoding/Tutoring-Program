@@ -1,400 +1,360 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
   <meta charset="UTF-8" />
-  <title>Harita ve Emoji Botlar + Mini Harita</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tutoring Program</title>
   <style>
-    html,
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #1976d2, #64b5f6);
       margin: 0;
       padding: 0;
+      min-height: 100vh;
       overflow: hidden;
-      background: #111;
-      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
     }
 
-    canvas {
-      display: block;
-      background: #222;
-    }
-
-    #miniMapContainer {
+    .background-animation {
       position: fixed;
-      top: 10px;
-      left: 10px;
-      background: #222c;
-      border: 2px solid #555;
-      width: 200px;
-      height: 200px;
-      box-sizing: border-box;
-      z-index: 20;
-    }
-
-    #miniMap {
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .background-animation .shape {
+      position: absolute;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.2);
+      animation: floatShape 20s linear infinite;
+    }
+
+    @keyframes floatShape {
+      0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0.3;
+      }
+      50% {
+        transform: translateY(-100px) translateX(100px) scale(1.2);
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0.3;
+      }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 90%;
+      max-width: 650px;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #0d47a1;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    label {
+      margin-top: 10px;
       display: block;
-      background: #444;
+      font-weight: 500;
+      color: #333;
     }
 
-    #playerSizeDisplay {
-      position: fixed;
-      top: 220px;
-      left: 10px;
-      color: #eee;
-      font-weight: bold;
-      font-size: 18px;
-      user-select: none;
-      z-index: 20;
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      font-size: 15px;
     }
 
-    #restartButton {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #ff5555;
+    input:focus, select:focus {
+      border-color: #1976d2;
+      box-shadow: 0 0 5px rgba(25, 118, 210, 0.4);
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(to right, #1976d2, #0d47a1);
       color: white;
-      font-size: 24px;
-      font-weight: bold;
-      padding: 20px 40px;
       border: none;
-      border-radius: 10px;
-      display: none;
-      z-index: 100;
+      border-radius: 6px;
       cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #1565c0, #003c8f);
+      transform: scale(1.02);
+    }
+
+    .teacher-list {
+      margin-top: 20px;
+    }
+
+    .teacher-card {
+      background: #e3f2fd;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      animation: fadeCard 0.5s ease forwards;
+    }
+
+    .teacher-card:hover {
+      background-color: #bbdefb;
+      transition: background 0.3s;
+    }
+
+    @keyframes fadeCard {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .teacher-card button {
+      padding: 8px 14px;
+      font-size: 14px;
+      background-color: #1e88e5;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .teacher-card button:hover {
+      background-color: #1565c0;
+      transform: scale(1.05);
+    }
+
+    #topNotification {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #2196f3;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+      animation: slideDown 0.5s ease-out;
+    }
+
+    #topNotification span.close-btn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 20px;
     }
   </style>
 </head>
-
 <body>
-  <canvas id="game"></canvas>
+  <!-- Arka plan animasyon alanı -->
+  <div class="background-animation" id="animatedBackground"></div>
 
-  <div id="miniMapContainer">
-    <canvas id="miniMap"></canvas>
+  <!-- Bildirim kutusu -->
+  <div id="topNotification">
+    <span id="notificationText"></span>
+    <span class="close-btn" onclick="closeNotification()">&times;</span>
   </div>
-  <div id="playerSizeDisplay"></div>
-  <button id="restartButton" onclick="location.reload()">Kaybettin <br> Yeniden Başlat</button>
+
+  <!-- Ana içerik -->
+  <div class="container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Logo-logosu.png"
+         alt="Okul Logosu"
+         style="max-width: 120px; display: block; margin: 0 auto 20px" />
+    <form id="studentForm" onsubmit="return startLessonProgram(event)">
+      <label>Ad Soyad:</label>
+      <input type="text" id="studentName" required />
+      <label>Okul Numarası:</label>
+      <input type="text" id="schoolNumber" required />
+      <label>Telefon Numarası:</label>
+      <input type="tel" id="phoneNumber" required />
+      <button type="submit">Devam Et</button>
+    </form>
+
+    <div id="lessonArea" style="display: none">
+      <h2>Hoş geldin, <span id="studentDisplayName"></span></h2>
+      <label for="subjectSelect">Ders Seç:</label>
+      <select id="subjectSelect" onchange="filterTeachers()">
+        <option value="">-- Bir ders seçin --</option>
+      </select>
+      <div id="teacherList" class="teacher-list"></div>
+    </div>
+  </div>
 
   <script>
-    const canvas = document.getElementById('game');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const miniMapCanvas = document.getElementById('miniMap');
-    const miniCtx = miniMapCanvas.getContext('2d');
-    miniMapCanvas.width = 200;
-    miniMapCanvas.height = 200;
-
-    const BASE_MAP_SIZE = 200000;
-    const MAP_SCALE = 1;
-    const MAP_WIDTH = BASE_MAP_SIZE * MAP_SCALE;
-    const MAP_HEIGHT = BASE_MAP_SIZE * MAP_SCALE;
-
-
-    const PLAYER_SPEED = 3;
-    const BOT_SPEED = 3;
-
-    const EMOJIS = [
-      '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
-      '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
-      '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🥳',
-      '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖',
-      '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '😶‍🌫️'
+    const subjects = [
+      "Matematik", "Fizik", "Kimya", "Biyoloji", "Tarih",
+      "Coğrafya", "Edebiyat", "Geometri", "İngilizce", "Almanca",
+      "Fransızca", "Felsefe", "Bilgisayar", "Müzik", "Resim"
     ];
 
-    const restartButton = document.getElementById('restartButton');
+    const teachers = [
+      { name: "Ahmet Yılmaz", subject: "Matematik" },
+      { name: "Ayşe Demir", subject: "Fizik" },
+      { name: "Mehmet Kaya", subject: "Kimya" },
+      { name: "Zeynep Çelik", subject: "Biyoloji" },
+      { name: "Fatma Koç", subject: "Matematik" },
+      { name: "Ali Öztürk", subject: "Fizik" },
+      { name: "Canan Aksoy", subject: "Kimya" },
+      { name: "Murat Güneş", subject: "Biyoloji" },
+      { name: "Hakan Yıldırım", subject: "Tarih" },
+      { name: "Selin Aydın", subject: "Geometri" },
+      { name: "Deniz Karaca", subject: "İngilizce" },
+      { name: "Burak Şahin", subject: "Almanca" },
+      { name: "Cemre Bal", subject: "Fransızca" },
+      { name: "Serkan Ateş", subject: "Felsefe" },
+      { name: "Nazan Işık", subject: "Bilgisayar" },
+      { name: "Gamze Arslan", subject: "Müzik" },
+      { name: "Tolga Duran", subject: "Resim" },
+      { name: "Bahar Taş", subject: "Edebiyat" },
+      { name: "Yunus Emre", subject: "Tarih" },
+      { name: "Nihat Güner", subject: "Coğrafya" }
+    ];
 
-    const player = {
-      x: MAP_WIDTH / 2,
-      y: MAP_HEIGHT / 2,
-      size: 30,
-      color: 'lime',
-      speed: PLAYER_SPEED,
-      dx: 0,
-      dy: 0,
-      emoji: '😎'
-    };
+    function startLessonProgram(event) {
+      event.preventDefault();
+      const name = document.getElementById("studentName").value;
+      const schoolNo = document.getElementById("schoolNumber").value;
+      const phone = document.getElementById("phoneNumber").value;
 
-    const bots = [];
-    function spawnBot() {
-      return {
-        x: Math.random() * MAP_WIDTH,
-        y: Math.random() * MAP_HEIGHT,
-        size: 30,
-        color: getRandomColor(),
-        dx: (Math.random() - 0.5) * BOT_SPEED * 2,
-        dy: (Math.random() - 0.5) * BOT_SPEED * 2,
-        alive: true,
-        emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
-        name: 'Bot'
-      };
-    }
-
-    function getRandomColor() {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    }
-
-    for (let i = 0; i < 200; i++) { // Eski: 25
-      bots.push(spawnBot());
-    }
-
-
-    const foods = [];
-    function spawnFoods(count) {
-      for (let i = 0; i < count; i++) {
-        foods.push({
-          x: Math.random() * MAP_WIDTH,
-          y: Math.random() * MAP_HEIGHT,
-          size: 8,
-          color: 'yellow'
-        });
-      }
-    }
-    spawnFoods(5000);
-
-    window.addEventListener('keydown', e => {
-      if (e.key === 'ArrowUp') player.dy = -player.speed;
-      if (e.key === 'ArrowDown') player.dy = player.speed;
-      if (e.key === 'ArrowLeft') player.dx = -player.speed;
-      if (e.key === 'ArrowRight') player.dx = player.speed;
-    });
-    window.addEventListener('keyup', e => {
-      if (['ArrowUp', 'ArrowDown'].includes(e.key)) player.dy = 0;
-      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) player.dx = 0;
-    });
-
-    function drawCircle(entity, cameraX, cameraY, scale = 1) {
-      const radius = entity.size * scale;
-
-      ctx.beginPath();
-      ctx.arc((entity.x - cameraX) * scale, (entity.y - cameraY) * scale, radius, 0, Math.PI * 2);
-      ctx.fillStyle = entity.color;
-      ctx.fill();
-
-      if (entity.emoji) {
-        ctx.font = `${radius * 1.5}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(entity.emoji, (entity.x - cameraX) * scale, (entity.y - cameraY) * scale);
-      }
-    }
-
-    function drawFood(food, cameraX, cameraY, scale = 1) {
-      ctx.beginPath();
-      ctx.arc((food.x - cameraX) * scale, (food.y - cameraY) * scale, food.size * scale, 0, Math.PI * 2);
-      ctx.fillStyle = food.color;
-      ctx.fill();
-    }
-
-    function getDistance(a, b) {
-      return Math.hypot(a.x - b.x, a.y - b.y);
-    }
-
-    function moveBot(bot) {
-      if (!bot.alive) return;
-
-      if (Math.random() < 0.02) {
-        bot.dx = (Math.random() - 0.5) * BOT_SPEED * 2;
-        bot.dy = (Math.random() - 0.5) * BOT_SPEED * 2;
+      if (!name || !schoolNo || !phone) {
+        alert("Lütfen tüm alanları doldurunuz.");
+        return false;
       }
 
-      let nearestFood = null;
-      let minFoodDist = Infinity;
-      for (let f of foods) {
-        const dist = getDistance(bot, f);
-        if (dist < minFoodDist) {
-          minFoodDist = dist;
-          nearestFood = f;
-        }
-      }
+      document.getElementById("studentDisplayName").textContent = name;
+      document.getElementById("studentForm").style.display = "none";
+      document.getElementById("lessonArea").style.display = "block";
 
-      for (let otherBot of bots) {
-        if (otherBot === bot || !otherBot.alive) continue;
-        const dist = getDistance(bot, otherBot);
-        if (dist < minFoodDist && bot.size > otherBot.size + 5) {
-          minFoodDist = dist;
-          nearestFood = otherBot;
-        }
-      }
-
-      if (nearestFood) {
-        let angle = Math.atan2(nearestFood.y - bot.y, nearestFood.x - bot.x);
-        bot.dx = Math.cos(angle) * BOT_SPEED;
-        bot.dy = Math.sin(angle) * BOT_SPEED;
-      }
-
-      bot.x += bot.dx;
-      bot.y += bot.dy;
-
-      if (bot.x < bot.size) bot.x = bot.size;
-      if (bot.y < bot.size) bot.y = bot.size;
-      if (bot.x > MAP_WIDTH - bot.size) bot.x = MAP_WIDTH - bot.size;
-      if (bot.y > MAP_HEIGHT - bot.size) bot.y = MAP_HEIGHT - bot.size;
-    }
-
-    function update() {
-      player.x += player.dx;
-      player.y += player.dy;
-      player.x = Math.min(Math.max(player.size, player.x), MAP_WIDTH - player.size);
-      player.y = Math.min(Math.max(player.size, player.y), MAP_HEIGHT - player.size);
-
-      bots.forEach(moveBot);
-
-      for (let i = foods.length - 1; i >= 0; i--) {
-        if (getDistance(player, foods[i]) < player.size) {
-          player.size += 5;
-          foods.splice(i, 1);
-        }
-      }
-
-      bots.forEach(bot => {
-        if (!bot.alive) return;
-
-        for (let i = foods.length - 1; i >= 0; i--) {
-          if (getDistance(bot, foods[i]) < bot.size) {
-            bot.size += 5;
-            foods.splice(i, 1);
-          }
-        }
-
-        for (let otherBot of bots) {
-          if (otherBot === bot || !otherBot.alive) continue;
-          const dist = getDistance(bot, otherBot);
-          if (dist < bot.size && bot.size > otherBot.size + 5) {
-            bot.size += otherBot.size / 2;
-            killBot(otherBot);
-          }
-        }
+      const subjectSelect = document.getElementById("subjectSelect");
+      subjectSelect.innerHTML = '<option value="">-- Bir ders seçin --</option>';
+      subjects.forEach(sub => {
+        const opt = document.createElement("option");
+        opt.value = sub;
+        opt.textContent = sub;
+        subjectSelect.appendChild(opt);
       });
 
-      for (let bot of bots) {
-        if (!bot.alive) continue;
-        const dist = getDistance(player, bot);
-        if (dist < player.size && player.size > bot.size + 5) {
-          player.size += bot.size / 2;
-          killBot(bot);
-        } else if (dist < bot.size && bot.size > player.size + 5) {
-          restartButton.style.display = 'block'; // alert yerine buton göster
-          cancelAnimationFrame(gameLoopId); // animasyonu durdur
-          return;
-        }
+      return false;
+    }
+
+    function filterTeachers() {
+      const subject = document.getElementById("subjectSelect").value;
+      const listDiv = document.getElementById("teacherList");
+      listDiv.innerHTML = "";
+
+      const filtered = teachers.filter(t => t.subject === subject);
+
+      if (filtered.length === 0) {
+        listDiv.innerHTML = "<p>Bu dersten öğretmen bulunamadı.</p>";
+        return;
       }
 
-      if (foods.length < 300) {
-        spawnFoods(400);
-      }
-    }
-
-    function killBot(bot) {
-      bot.alive = false;
-      setTimeout(() => {
-        Object.assign(bot, spawnBot());
-        bot.alive = true;
-      }, 10000);
-    }
-
-    function getCameraScale() {
-      const baseSize = 30;
-      const size = player.size;
-      const scale = 1 / Math.log2(size / baseSize + 1);
-      return Math.max(0.03, scale);
-    }
-
-    function drawMiniMap() {
-      miniCtx.clearRect(0, 0, miniMapCanvas.width, miniMapCanvas.height);
-
-      miniCtx.fillStyle = '#222';
-      miniCtx.fillRect(0, 0, miniMapCanvas.width, miniMapCanvas.height);
-
-      const scaleX = miniMapCanvas.width / MAP_WIDTH;
-      const scaleY = miniMapCanvas.height / MAP_HEIGHT;
-
-      miniCtx.fillStyle = 'yellow';
-      foods.forEach(food => {
-        miniCtx.beginPath();
-        miniCtx.arc(food.x * scaleX, food.y * scaleY, 1.5, 0, Math.PI * 2);
-        miniCtx.fill();
+      filtered.forEach(teacher => {
+        const card = document.createElement("div");
+        card.className = "teacher-card";
+        card.innerHTML = `
+          <span>${teacher.name} (${teacher.subject})</span>
+          <button onclick="handleLessonRequest('${teacher.name}')">Ders Al</button>
+        `;
+        listDiv.appendChild(card);
       });
-
-      bots.forEach(bot => {
-        if (bot.alive) {
-          miniCtx.fillStyle = bot.color;
-          miniCtx.beginPath();
-          miniCtx.arc(bot.x * scaleX, bot.y * scaleY, 3, 0, Math.PI * 2);
-          miniCtx.fill();
-        }
-      });
-
-      miniCtx.strokeStyle = 'white';
-      miniCtx.lineWidth = 2;
-      miniCtx.beginPath();
-      miniCtx.arc(player.x * scaleX, player.y * scaleY, 5, 0, Math.PI * 2);
-      miniCtx.stroke();
-
-      const scale = getCameraScale();
-      const camWidth = miniMapCanvas.width / scale;
-      const camHeight = miniMapCanvas.height / scale;
-
-      let camX = player.x - (canvas.width / (2 * scale));
-      let camY = player.y - (canvas.height / (2 * scale));
-
-      camX *= scaleX;
-      camY *= scaleY;
-
-      miniCtx.strokeStyle = 'white';
-      miniCtx.lineWidth = 1;
-      miniCtx.strokeRect(camX, camY, camWidth * scaleX, camHeight * scaleY);
     }
 
-    let gameLoopId;
-    function gameLoop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      update();
-
-      const scale = getCameraScale();
-      const cameraX = player.x - canvas.width / (2 * scale);
-      const cameraY = player.y - canvas.height / (2 * scale);
-
-      ctx.save();
-      ctx.scale(scale, scale);
-      ctx.translate(-cameraX, -cameraY);
-
-      ctx.fillStyle = '#444';
-      ctx.fillRect(0, 0, MAP_WIDTH, MAP_HEIGHT);
-
-      foods.forEach(food => drawFood(food, 0, 0));
-
-      bots.forEach(bot => {
-        if (bot.alive) drawCircle(bot, 0, 0);
-      });
-
-      drawCircle(player, 0, 0);
-
-      ctx.restore();
-
-      drawMiniMap();
-
-      document.getElementById('playerSizeDisplay').textContent = `Hacmin: ${Math.round(player.size)} px`;
-
-      gameLoopId = requestAnimationFrame(gameLoop);
+    function handleLessonRequest(teacherName) {
+      const box = document.getElementById("topNotification");
+      const text = document.getElementById("notificationText");
+      text.textContent = `Ders talebiniz ${teacherName} için iletildi!`;
+      box.style.display = "block";
+      box.style.animation = "slideDown 0.5s ease-out";
+      setTimeout(() => closeNotification(), 10000);
     }
 
-    gameLoop();
+    function closeNotification() {
+      document.getElementById("topNotification").style.display = "none";
+    }
 
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
+    // Arka plan animasyonlarını oluştur
+    const background = document.getElementById("animatedBackground");
+    for (let i = 0; i < 20; i++) {
+      const shape = document.createElement("div");
+      shape.classList.add("shape");
+      const size = Math.random() * 40 + 10;
+      shape.style.width = shape.style.height = size + "px";
+      shape.style.left = Math.random() * 100 + "%";
+      shape.style.top = Math.random() * 100 + "%";
+      shape.style.animationDuration = (Math.random() * 20 + 10) + "s";
+      shape.style.backgroundColor = `rgba(255, 255, 255, ${Math.random() * 0.2 + 0.1})`;
+      background.appendChild(shape);
+    }
   </script>
 </body>
-
 </html>
